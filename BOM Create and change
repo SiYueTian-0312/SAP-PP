@@ -1,0 +1,53 @@
+ZPP_BOM_CREATE_UPDATE
+*&---------------------------------------------------------------------*
+*& Report         :  ZPP_BOM_CREATE_UPDATE                              *
+*& Autor          :  JT-ABAP                                    *
+*  Date           :  24.01.2025                                       *
+*  Description    :  BOM Batch Import     *
+* Category        :  Executable program                                *
+* Run Frequency   :  As on when required                               *
+***********************modification log*********************************
+*USER   | Date     | Transport| Detailed Description
+*----------------------------------------------------------------------*
+*----------------------------------------------------------------------*
+REPORT zpp_bom_create_update.
+INCLUDE zpp_<icon>.
+INCLUDE zpp_bom_create_update_top.
+INCLUDE zpp_bom_create_update_cl.
+INCLUDE zpp_bom_create_update_f01.
+*INCLUDE zpp_bom_create_update_f02.
+
+INITIALIZATION.
+  MOVE 'Template Download' TO sscrfields-functxt_01.
+
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_file.
+  PERFORM f_get_file CHANGING p_file.
+
+AT SELECTION-SCREEN.
+  PERFORM sub_download_template .
+  PERFORM f_download_format.
+"  PERFORM f_download_format2.
+
+START-OF-SELECTION.
+  PERFORM f_upload_file.
+  PERFORM f_check_data.
+
+END-OF-SELECTION.
+  IF gt_OUT IS NOT INITIAL.
+    CALL SCREEN 9000.
+  ELSE.
+    MESSAGE 'No Valid Data' TYPE c_i.
+    LEAVE LIST-PROCESSING.
+  ENDIF.
+*&---------------------------------------------------------------------*
+*& Form f_download_format2
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM f_download_format2 .
+
+ENDFORM.
